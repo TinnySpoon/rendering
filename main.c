@@ -6,8 +6,18 @@
 
 #define moveCursorTo(x,y) printf("\033[%d;%dH", x, y)
 
+void mainFunc() {
+	printf("running mainFunc function\n");
+}
+
+
 int main(int argc, char** argv) {
-	window* w = newWindow(150, 31);
+	// window* w = newWindow(150, 31);
+	window* w = 0;
+
+	windowMainLoop(w, mainFunc);
+
+	return 0;
 
 
 	int frame = 0;

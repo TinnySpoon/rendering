@@ -145,4 +145,6 @@ void windowFree(window* w) {
 }
 
 
-void windowMainLoop(window* w, ) // TODO
+void windowMainLoop(window* w, void (*mainFunc)()) {
+    mainFunc();
+}
