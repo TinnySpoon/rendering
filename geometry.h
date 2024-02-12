@@ -127,16 +127,40 @@ shape* rect4(renderpoint p1, renderpoint p2, renderpoint p3, renderpoint p4) {
     return rect;
 }
 
+float constrain_angle(float angle) {
+    // Ensure the angle is positive
+    while (angle < 0) {
+        angle += 2 * M_PI;
+    }
+
+    // Ensure the angle is within the range [0, 2*pi)
+    while (angle >= 2 * M_PI) {
+        angle -= 2 * M_PI;
+    }
+
+    return angle;
+}
+
 
 renderpointfl renderpointflRotate(renderpointfl p, renderpointfl rotationPoint, float angle) {
+    printf("p.x = %f\n", p.x);
+    printf("p.y = %f\n", p.y);
     float nx = p.x - rotationPoint.x;
     float ny = p.y - rotationPoint.y;
 
+    printf("p.x = %f\n", p.x);
+    printf("p.y = %f\n", p.y);
+
     float anglesin = sin(angle);
     float anglecos = cos(angle);
+    printf("anglesin = %f\n", anglesin);
+    printf("anglecos = %f\n", anglecos);
 
     p.x = nx * anglecos - ny * anglesin + rotationPoint.x;
     p.y = nx * anglesin - ny * anglecos + rotationPoint.y;
+
+    printf("p.x = %f\n", p.x);
+    printf("p.y = %f\n", p.y);
 
     return p;
 }

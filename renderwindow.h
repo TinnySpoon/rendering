@@ -31,6 +31,7 @@ typedef struct {
     int offsetX;
     int offsetY;
     bool running;
+    bool needsLineFeed; // :/
     queue* points;
     char* buffer;
 } window;
@@ -76,9 +77,7 @@ window* newWindowFixedSize() { // TODO fix sizing and test for linux
     #endif
 
     printf("width = %i, height = %i\n", screenWidth, screenHeight);
-    // int w=1,h=1;
 
-    // return NULL;
     return newWindow(w,h);
 }
 
@@ -165,13 +164,20 @@ void windowPrint(window* w) {
     char* buffer = malloc(sizeof(char)*w->sizeX*(w->sizeY+1));
     int sizeXplus1 = w->sizeX+1;
 
-    for(int y = 0; y < w->sizeY; y++) {
+    for(int y = 0; y < w->sizeY-1; y++) {
         for(int x = 0; x < w->sizeX; x++) {
             buffer[x+y*sizeXplus1] = w->buffer[y + x*w->sizeY];
             // printf("%c", w->buffer[y + x*w->sizeY]);
         }
         buffer[w->sizeX+y*sizeXplus1] = '\n';
     }
+
+    for(int x = 0; x < w->sizeX; x++) {
+        buffer[x+(w->sizeY-1)*sizeXplus1] = w->buffer[(w->sizeY-1) + x*w->sizeY];
+        // printf("%c", w->buffer[y + x*w->sizeY]);
+    }
+
+
     puts(buffer);
     free(buffer);
 
