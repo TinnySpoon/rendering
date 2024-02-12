@@ -2,7 +2,6 @@
 #include <stdbool.h>
 
 
-int screenWidth, screenHeight;
 #ifdef __linux__
 	#include <unistd.h>
     #include <X11/Xlib.h> // may need to run the command "sudo apt-get install libx11-dev"
@@ -20,11 +19,10 @@ int screenWidth, screenHeight;
 
 #endif
 
-
-
-
 #include "geometry.h"
 
+#define USECSPERFRAME60HZ 16666
+#define USECSPERFRAME30HZ 33333
 #define WINDX(w, x, y) w->buffer[y + x*w->sizeY]
 
 typedef struct {
@@ -32,6 +30,7 @@ typedef struct {
     int sizeY;
     int offsetX;
     int offsetY;
+    bool running;
     queue* points;
     char* buffer;
 } window;
@@ -45,6 +44,7 @@ window* newWindow(int sizeX, int sizeY) {
     w->sizeY = sizeY-1;
     w->offsetX = sizeX/2;
     w->offsetY = sizeY/2-1;
+    w->running = true;
     w->points = createQueue();
     w->buffer = malloc(sizeof(char) * sizeX * sizeY); // puts buffer into that allocated memory
     for(int i = 0; i < (sizeX) * (sizeY); i++) w->buffer[i] = ' ';
@@ -162,12 +162,17 @@ void windowPrint(window* w) {
     printf("\033[%d;%dH", 0, 0);
     windowPointsToBuffer(w);  
 
+    char* buffer = malloc(sizeof(char)*w->sizeX*w->sizeY);
+
     for(int y = 0; y < w->sizeY; y++) {
         for(int x = 0; x < w->sizeX; x++) {
-            printf("%c", w->buffer[y + x*w->sizeY]);
+            buffer[x+y*w->sizeX] = w->buffer[y + x*w->sizeY];
+            // printf("%c", w->buffer[y + x*w->sizeY]);
         }
-        printf("\n");
+        // printf("\n");
     }
+    puts(buffer);
+
 
     windowClear(w);
 
@@ -211,6 +216,9 @@ void windowFree(window* w) {
 }
 
 
-void windowMainLoop(window* w, void (*mainFunc)()) {
-    mainFunc();
+void windowMainLoop(window* w, void (*mainFunc)(window*)) {
+    while(w->running) {
+        mainFunc(w);
+        usleep(USECSPERFRAME60HZ);
+    }
 }
