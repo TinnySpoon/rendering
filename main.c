@@ -1,10 +1,9 @@
 #include <stdio.h>
-#include <unistd.h>
 // #include <stdlib.h>
 #include "renderwindow.h"
-// #include "../cm_math/cm_math.h"
 
 #define moveCursorTo(x,y) printf("\033[%d;%dH", x, y)
+
 
 void mainFunc() {
 	printf("running mainFunc function\n");
@@ -12,12 +11,14 @@ void mainFunc() {
 
 
 int main(int argc, char** argv) {
-	// window* w = newWindow(150, 31);
-	window* w = 0;
+	window* w = newWindow(150, 31);
+	// window* w = 0;
 
-	windowMainLoop(w, mainFunc);
+	// // usleep(3000000);
 
-	return 0;
+	// windowMainLoop(w, mainFunc);
+
+	// return 0;
 
 
 	int frame = 0;

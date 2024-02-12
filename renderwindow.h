@@ -1,5 +1,24 @@
 // #include <stdlib.h>
 #include <stdbool.h>
+
+#ifdef __linux__
+	#include <unistd.h>
+#endif
+
+#ifdef _WIN32
+    #include <time.h>
+    void usleep(unsigned long microseconds) {
+        struct timespec ts;
+        ts.tv_sec = microseconds / 1000000;
+        ts.tv_nsec = (microseconds % 1000000) * 1000;
+
+        while (nanosleep(&ts, &ts) == -1);
+    }
+#endif
+
+
+
+
 #include "geometry.h"
 
 #define WINDX(w, x, y) w->buffer[y + x*w->sizeY]
@@ -95,8 +114,10 @@ char windowGetXYraw(window* w, int x, int y) { // FIX THIS
 
 void windowPointsToBuffer(window* w) {
     if(isEmpty(w->points)) {
+        printf("points empty\n");
         return;
     }
+    printf("points not empty with len of %i\n", w->points->len);
 
     struct Node* current = w->points->front;
     while(current != NULL) {
