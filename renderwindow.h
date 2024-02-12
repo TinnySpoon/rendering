@@ -70,11 +70,15 @@ window* newWindowFixedSize() { // TODO fix sizing and test for linux
     // printf("width = %i, height = %i\n", screenWidth, screenHeight);
 
     int w, h;
-    switch(screenWidth) {
-        case 1920:
-            w = 209;
-            h = 55;
-    }
+    // (w - 32) / 9? because characters (plus spacing between them) are 9 px wide
+    // (h - 35) / 19? because characters (plus spacing between them) are 19 px tall
+    // switch(screenWidth) {
+    //     case 1920:
+    //         w = 209;
+    //         h = 55;
+    // }
+    w = (screenWidth - 32) / 9;
+    h = (screenHeight - 35) / 19;
 
 
     return newWindow(w,h);
