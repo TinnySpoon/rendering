@@ -2,12 +2,39 @@
 
 
 typedef queue shape; // same ol data format but new funcs :/
+/*
+// Define the structure of a node in the queue
+struct Node {
+    renderpoint data;
+    struct Node* next;
+};
+
+// Define the structure of the queue
+typedef struct Queue {
+    int len;
+    struct Node* front;
+    struct Node* rear;
+} queue;
+*/
+
+
+
 
 shape* newShape() {
     shape* s = (shape*)malloc(sizeof(shape));
     s->len = 0;
     s->front = s->rear = NULL;
     return s;
+}
+
+void shapeFree(shape* s) {
+    while(s->front != NULL) {
+        struct Node* n = s->front;
+        s->front = s->front->next;
+        free(n);
+    }
+
+    free(s);
 }
 
 void shapeAddPoint(shape* s, renderpoint p) {
@@ -20,6 +47,45 @@ void shapeAddPoint(shape* s, renderpoint p) {
     s->rear = newNode;
     s->len++;
 }
+
+void shapeAddShape(shape* s1, shape* s2) {
+    struct Node* n = s2->front;
+    while(n != NULL) {
+        shapeAddPoint(s1, n->data);
+        n = n->next;
+    }
+}
+
+
+shape* line(renderpoint p1, renderpoint p2) {
+    int dx = abs(p2.x - p1.x);
+    int dy = abs(p2.y - p1.y);
+
+    int sx = (p1.x < p2.x) ? 1 : -1;
+    int sy = (p1.y < p2.y) ? 1 : -1;
+
+    int err = dx - dy;
+    int e2;
+    shape* s = newShape();
+
+    while(true) {
+        shapeAddPoint(s, p1);
+
+        if(p1.x == p2.x && p1.y == p2.y) break;
+        e2 = 2*err;
+        if(e2 > -dy) {
+            err -= dy;
+            p1.x += sx;
+        }
+        if(e2 < dx) {
+            err += dx;
+            p1.y += sy;
+        }
+    }
+
+    return s;
+}
+
 
 shape* rect2(renderpoint p1, renderpoint p2) {
     shape* s = newShape();
@@ -40,4 +106,23 @@ shape* rect2(renderpoint p1, renderpoint p2) {
     }
 
     return s;
+}
+
+shape* rect4(renderpoint p1, renderpoint p2, renderpoint p3, renderpoint p4) {
+
+    shape* rect = line(p1, p2); // just use the first line as the rectangle object
+    shape* l2 = line(p2, p3);
+    shape* l3 = line(p3, p4);
+    shape* l4 = line(p4, p1);
+
+    shapeAddShape(rect, l2);
+    shapeAddShape(rect, l3);
+    shapeAddShape(rect, l4);
+
+    shapeFree(l2);
+    shapeFree(l3);
+    shapeFree(l4);
+    
+
+    return rect;
 }

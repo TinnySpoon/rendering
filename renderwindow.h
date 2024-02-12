@@ -40,7 +40,7 @@ window* newWindow(int sizeX, int sizeY) {
     w->sizeY = sizeY-1;
     w->offsetX = sizeX/2;
     w->offsetY = sizeY/2-1;
-    w->points = malloc(sizeof(queue));
+    w->points = createQueue();
     w->buffer = malloc(sizeof(char) * sizeX * sizeY); // puts buffer into that allocated memory
     for(int i = 0; i < (sizeX) * (sizeY); i++) w->buffer[i] = ' ';
 
@@ -53,7 +53,7 @@ void windowClearPoints(window* w) { clearQueue(w->points); }
 
 bool windowPushPoint(window* w, renderpoint p) {
     p.x += w->offsetX;
-    p.y += w->offsetY;
+    p.y = w->offsetY - p.y;
     if(p.x < 0 || p.x > w->sizeX-1) return false;
     if(p.y < 0 || p.y > w->sizeY-1) return false;
     enqueue(w->points, p);
@@ -64,9 +64,9 @@ renderpoint windowPopPoint(window* w) {
     return dequeue(w->points);
 }
 
-bool windowSetXY(window* w, renderpoint p) {
+bool windowSetPoint(window* w, renderpoint p) {
     p.x += w->offsetX;
-    p.y += w->offsetY;
+    p.y = w->offsetY - p.y;
     if(p.x < 0 || p.x > w->sizeX-1) return false;
     if(p.y < 0 || p.y > w->sizeY-1) return false;
     w->buffer[p.y + p.x*w->sizeY] = p.c;
@@ -80,7 +80,7 @@ bool windowSetShape(window* w, shape* s) {
 
     struct Node* current = s->front;
     while(current != NULL) {
-        windowSetXY(w, current->data);
+        windowSetPoint(w, current->data);
         // WINDX(w,current->data.x+w->offsetX,current->data.y+w->offsetY) = current->data.c;
         current = current->next;
     }
@@ -88,7 +88,9 @@ bool windowSetShape(window* w, shape* s) {
     return true;
 }
 
-bool windowSetXYraw(window* w, int x, int y, char c) {
+bool windowSetXY(window* w, int x, int y, char c) {
+    x += w->offsetX;
+    y = w->offsetY - y;
     if(x < 0 || x > w->sizeX-1) return false;
     if(y < 0 || y > w->sizeY-1) return false;
     w->buffer[y + x*w->sizeY] = c;
@@ -159,9 +161,23 @@ void windowOutline(window* w) {
     w->buffer[w->sizeX*w->sizeY - 1] = '+';
 }
 
+void windowOrigin(window* w) { WINDX(w, w->offsetX, w->offsetY) = '+';}
+
+void windowPlotAxes(window* w) {
+    for(int y = 0; y < w->sizeY; y++) {
+        WINDX(w, w->offsetX, y) = '|';
+    }
+
+    for(int x = 0; x < w->sizeX; x++) {
+        WINDX(w, x, w->offsetY) = '-';
+    }
+
+    WINDX(w, w->offsetX, w->offsetY) = '+';
+}
+
 void windowFree(window* w) {
     free(w->buffer);
-    free(w->points);
+    freeQueue(w->points);
     free(w);
 }
 

@@ -23,11 +23,19 @@ int main(int argc, char** argv) {
 
 	int frame = 0;
 	
-	renderpoint p1 = newrp(-50,-7, '0');
-	renderpoint p2 = newrp(50,7, '0');
-	shape* rect = rect2(p1, p2);
+	renderpoint p1 = newrp(-50,7, '0');
+	renderpoint p2 = newrp(50,4, '0');
+	renderpoint p3 = newrp(40,-7, '0');
+	renderpoint p4 = newrp(-40,-7, '0');
+	shape* rect = rect4(p1, p2, p3, p4);
+	windowPushPoint(w, p1);
+	windowPushPoint(w, p2);
 	windowSetShape(w, rect);
+	windowOrigin(w);
+	windowPlotAxes(w);
 	windowOutline(w);
+	windowPrint(w);
+	windowPlotAxes(w);
 	windowPrint(w);
 
 	printf("\n%i\n", rect->len);

@@ -52,7 +52,7 @@ struct Queue* createQueue() {
         // printf("Memory allocation failed\n");
         exit(1);
     }
-    queue->len = 0;
+    queue->len = 1;
     queue->front = queue->rear = NULL;
     return queue;
 }
@@ -94,4 +94,9 @@ void clearQueue(struct Queue *queue) {
     while (!isEmpty(queue)) {
         dequeue(queue);
     }
+}
+
+void freeQueue(struct Queue* queue) {
+    clearQueue(queue);
+    free(queue);
 }
