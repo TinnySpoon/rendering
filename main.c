@@ -24,20 +24,20 @@ int main(int argc, char** argv) {
 	// return 0;
 
 
-	int frame = 0;
+	// int frame = 0;
 	
-	renderpoint p1 = newrp(-50,7, '0');
-	renderpoint p2 = newrp(50,4, '0');
-	renderpoint p3 = newrp(40,-7, '0');
-	renderpoint p4 = newrp(-40,-7, '0');
-	shape* rect = rect4(p1, p2, p3, p4);
-	float theta = M_PI * 3.0f / 4.0f;
-	p1 = rpfltorp(renderpointflRotate(rptorpfl(p1), RPFL0, theta));
-	windowPushPoint(w, p1);
-	// windowPushPoint(w, p2);
-	windowSetShape(w, rect);
-	windowOrigin(w);
-	windowPlotAxes(w);
+	// renderpoint p1 = newrp(-50,7, '0');
+	// renderpoint p2 = newrp(50,4, '0');
+	// renderpoint p3 = newrp(40,-7, '0');
+	// renderpoint p4 = newrp(-40,-7, '0');
+	// shape* rect = rect4(p1, p2, p3, p4);
+	// float theta = M_PI * 3.0f / 4.0f;
+	// p1 = rpfltorp(renderpointflRotate(rptorpfl(p1), RPFL0, theta));
+	// windowPushPoint(w, p1);
+	// // windowPushPoint(w, p2);
+	// windowSetShape(w, rect);
+	// windowOrigin(w);
+	// windowPlotAxes(w);
 	windowOutline(w);
 	windowPrint(w);
 	while(true){}

@@ -5,7 +5,7 @@
 int screenWidth, screenHeight;
 #ifdef __linux__
 	#include <unistd.h>
-    #include <X11/Xlib.h>
+    #include <X11/Xlib.h> // may need to run the command "sudo apt-get install libx11-dev"
 #elif _WIN32
     #include <time.h>
     #include <windows.h>
@@ -62,25 +62,23 @@ window* newWindowFixedSize() { // TODO fix sizing and test for linux
         int screenHeight = HeightOfScreen(screen);
 
         XCloseDisplay(display);
+
+        int w = (screenWidth-10) / 8;
+        int h = (screenHeight-50)/17;
+
     #elif _WIN32
         int screenWidth = GetSystemMetrics(SM_CXSCREEN);
         int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+        // (w - 32) / 9? because characters (plus spacing between them) are 9 px wide
+        // (h - 35) / 19? because characters (plus spacing between them) are 19 px tall
+        int w = (screenWidth - 32) / 9;
+        int h = (screenHeight - 35) / 19;
     #endif
 
-    // printf("width = %i, height = %i\n", screenWidth, screenHeight);
+    printf("width = %i, height = %i\n", screenWidth, screenHeight);
+    // int w=1,h=1;
 
-    int w, h;
-    // (w - 32) / 9? because characters (plus spacing between them) are 9 px wide
-    // (h - 35) / 19? because characters (plus spacing between them) are 19 px tall
-    // switch(screenWidth) {
-    //     case 1920:
-    //         w = 209;
-    //         h = 55;
-    // }
-    w = (screenWidth - 32) / 9;
-    h = (screenHeight - 35) / 19;
-
-
+    // return NULL;
     return newWindow(w,h);
 }
 
