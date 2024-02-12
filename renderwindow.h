@@ -162,20 +162,20 @@ void windowPrint(window* w) {
     printf("\033[%d;%dH", 0, 0);
     windowPointsToBuffer(w);  
 
-    char* buffer = malloc(sizeof(char)*w->sizeX*w->sizeY);
+    char* buffer = malloc(sizeof(char)*w->sizeX*(w->sizeY+1));
+    int sizeXplus1 = w->sizeX+1;
 
     for(int y = 0; y < w->sizeY; y++) {
         for(int x = 0; x < w->sizeX; x++) {
-            buffer[x+y*w->sizeX] = w->buffer[y + x*w->sizeY];
+            buffer[x+y*sizeXplus1] = w->buffer[y + x*w->sizeY];
             // printf("%c", w->buffer[y + x*w->sizeY]);
         }
-        // printf("\n");
+        buffer[w->sizeX+y*sizeXplus1] = '\n';
     }
     puts(buffer);
-
+    free(buffer);
 
     windowClear(w);
-
 }
 
 void windowOutline(window* w) {

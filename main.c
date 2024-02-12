@@ -26,7 +26,8 @@ void mainFunc(window* w) {
 
 
 int main(int argc, char** argv) {
-	window* w = newWindowFixedSize();
+	// window* w = newWindowFixedSize();
+	window* w = newWindow(atoi(argv[1]), atoi(argv[2]));
 	windowMainLoop(w, mainFunc);
 	return 0;
 }
