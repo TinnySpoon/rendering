@@ -36,20 +36,6 @@ typedef struct {
     char* buffer;
 } window;
 
-window* newWindowFixedSize() { // TODO fix sizing and test for linux
-    #ifdef __linux__
-        Display* display = XOpenDisplay(NULL);
-        Screen* screen = DefaultScreenOfDisplay(display);
-
-        int screenWidth = WidthOfScreen(screen);
-        int screenHeight = HeightOfScreen(screen);
-
-        XCloseDisplay(display);
-    #elif _WIN32
-        int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-        int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-    #endif
-}
 
 window* newWindow(int sizeX, int sizeY) {
     printf("\033[2J");
@@ -64,6 +50,34 @@ window* newWindow(int sizeX, int sizeY) {
     for(int i = 0; i < (sizeX) * (sizeY); i++) w->buffer[i] = ' ';
 
     return w;
+}
+
+
+window* newWindowFixedSize() { // TODO fix sizing and test for linux
+    #ifdef __linux__
+        Display* display = XOpenDisplay(NULL);
+        Screen* screen = DefaultScreenOfDisplay(display);
+
+        int screenWidth = WidthOfScreen(screen);
+        int screenHeight = HeightOfScreen(screen);
+
+        XCloseDisplay(display);
+    #elif _WIN32
+        int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+        int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+    #endif
+
+    // printf("width = %i, height = %i\n", screenWidth, screenHeight);
+
+    int w, h;
+    switch(screenWidth) {
+        case 1920:
+            w = 209;
+            h = 55;
+    }
+
+
+    return newWindow(w,h);
 }
 
 void windowClear(window* w) { for(int i = 0; i < (w->sizeX) * (w->sizeY); i++) w->buffer[i] = ' '; }
@@ -134,12 +148,6 @@ char windowGetXYraw(window* w, int x, int y) { // FIX THIS
 
 
 void windowPointsToBuffer(window* w) {
-    if(isEmpty(w->points)) {
-        printf("points empty\n");
-        return;
-    }
-    printf("points not empty with len of %i\n", w->points->len);
-
     struct Node* current = w->points->front;
     while(current != NULL) {
         WINDX(w,current->data.x,current->data.y) = current->data.c;

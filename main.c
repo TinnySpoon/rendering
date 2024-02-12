@@ -1,17 +1,20 @@
 #include <stdio.h>
-// #include <stdlib.h>
 #include "renderwindow.h"
 
 #define moveCursorTo(x,y) printf("\033[%d;%dH", x, y)
 
+#ifndef M_PI // vscode error checking was throwing a fit
+const M_PI = 3.14;
+#endif
 
-void mainFunc() {
+void mainFunc(window* w) {
 	printf("running mainFunc function\n");
 }
 
 
 int main(int argc, char** argv) {
-	window* w = newWindow(150, 31);
+	window* w = newWindowFixedSize();
+	// window* w = newWindow(150, 31);
 	// window* w = 0;
 
 	// // usleep(3000000);
@@ -37,12 +40,13 @@ int main(int argc, char** argv) {
 	windowPlotAxes(w);
 	windowOutline(w);
 	windowPrint(w);
-	windowPlotAxes(w);
-	windowPrint(w);
+	while(true){}
+	// windowPlotAxes(w);
+	// windowPrint(w);
 
-	printf("\n%f\n", theta);
-	printf("\n%i\n", p1.x);
-	printf("\n%i\n", p1.y);
+	// printf("\n%f\n", theta);
+	// printf("\n%i\n", p1.x);
+	// printf("\n%i\n", p1.y);
 	
 	
 	// for(int i = 0; i < 1000; i++) {
