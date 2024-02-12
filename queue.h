@@ -7,6 +7,8 @@ typedef struct {
 } renderpoint;
 #define RPNULL (renderpoint){-1,-1,-1}
 #define RP0 (renderpoint) {0,0,' '}
+#define RPFLNULL (renderpointfl){-1,-1,-1}
+#define RPFL0 (renderpointfl) {0,0,' '}
 
 typedef struct {
     float x, y;
@@ -19,6 +21,10 @@ renderpoint newrp(int x, int y, char c) { return (renderpoint){x,y,c}; }
 renderpointfl newrpfl(float x, float y, char c) { return (renderpointfl){x,y,c}; }
 // renderpointfl to renderpoint
 renderpoint rpfltorp(renderpointfl p) { return (renderpoint){p.x,p.y,p.c}; }
+// renderpoint to renderpointfl
+renderpointfl rptorpfl(renderpoint p) { return (renderpointfl){p.x,p.y,p.c}; }
+
+
 
 // Define the structure of a node in the queue
 struct Node {

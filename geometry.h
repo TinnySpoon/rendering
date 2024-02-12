@@ -1,5 +1,5 @@
 #include "queue.h"
-
+#include <math.h>
 
 typedef queue shape; // same ol data format but new funcs :/
 /*
@@ -125,4 +125,18 @@ shape* rect4(renderpoint p1, renderpoint p2, renderpoint p3, renderpoint p4) {
     
 
     return rect;
+}
+
+
+renderpointfl renderpointflRotate(renderpointfl p, renderpointfl rotationPoint, float angle) {
+    float nx = p.x - rotationPoint.x;
+    float ny = p.y - rotationPoint.y;
+
+    float anglesin = sin(angle);
+    float anglecos = cos(angle);
+
+    p.x = nx * anglecos - ny * anglesin + rotationPoint.x;
+    p.y = nx * anglesin - ny * anglecos + rotationPoint.y;
+
+    return p;
 }

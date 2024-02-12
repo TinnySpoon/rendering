@@ -1,12 +1,15 @@
 // #include <stdlib.h>
 #include <stdbool.h>
 
+
+int screenWidth, screenHeight;
 #ifdef __linux__
 	#include <unistd.h>
-#endif
-
-#ifdef _WIN32
+    #include <X11/Xlib.h>
+#elif _WIN32
     #include <time.h>
+    #include <windows.h>
+
     void usleep(unsigned long microseconds) {
         struct timespec ts;
         ts.tv_sec = microseconds / 1000000;
@@ -14,6 +17,7 @@
 
         while (nanosleep(&ts, &ts) == -1);
     }
+
 #endif
 
 
@@ -31,6 +35,21 @@ typedef struct {
     queue* points;
     char* buffer;
 } window;
+
+window* newWindowFixedSize() { // TODO fix sizing and test for linux
+    #ifdef __linux__
+        Display* display = XOpenDisplay(NULL);
+        Screen* screen = DefaultScreenOfDisplay(display);
+
+        int screenWidth = WidthOfScreen(screen);
+        int screenHeight = HeightOfScreen(screen);
+
+        XCloseDisplay(display);
+    #elif _WIN32
+        int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+        int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+    #endif
+}
 
 window* newWindow(int sizeX, int sizeY) {
     printf("\033[2J");

@@ -28,8 +28,10 @@ int main(int argc, char** argv) {
 	renderpoint p3 = newrp(40,-7, '0');
 	renderpoint p4 = newrp(-40,-7, '0');
 	shape* rect = rect4(p1, p2, p3, p4);
+	float theta = M_PI * 3.0f / 4.0f;
+	p1 = rpfltorp(renderpointflRotate(rptorpfl(p1), RPFL0, theta));
 	windowPushPoint(w, p1);
-	windowPushPoint(w, p2);
+	// windowPushPoint(w, p2);
 	windowSetShape(w, rect);
 	windowOrigin(w);
 	windowPlotAxes(w);
@@ -38,7 +40,9 @@ int main(int argc, char** argv) {
 	windowPlotAxes(w);
 	windowPrint(w);
 
-	printf("\n%i\n", rect->len);
+	printf("\n%f\n", theta);
+	printf("\n%i\n", p1.x);
+	printf("\n%i\n", p1.y);
 	
 	
 	// for(int i = 0; i < 1000; i++) {
