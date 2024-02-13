@@ -37,7 +37,32 @@ typedef struct {
 } window;
 
 
+
+int screenWidth, screenHeight;
+float vcomp;
+void initEnvironment() {
+    #ifdef __linux__
+        Display* display = XOpenDisplay(NULL);
+        Screen* screen = DefaultScreenOfDisplay(display);
+
+        screenWidth = WidthOfScreen(screen);
+        screenHeight = HeightOfScreen(screen);
+
+        XCloseDisplay(display);
+
+        vcomp = 8.0f/17.0f;
+    #elif _WIN32
+        screenWidth = GetSystemMetrics(SM_CXSCREEN);
+        screenHeight = GetSystemMetrics(SM_CYSCREEN);
+        vcomp = 9.0f/19.0f;
+    #endif
+}
+
+
+bool environmentInitialized = false;
 window* newWindow(int sizeX, int sizeY) {
+    if(!environmentInitialized) { initEnvironment(); environmentInitialized = true; }
+
     printf("\033[2J");
     sizeY++; // dont ask me what the problem is idrk but this helps at least
     window* w = malloc(sizeof(window));
@@ -54,22 +79,14 @@ window* newWindow(int sizeX, int sizeY) {
 }
 
 
-window* newWindowFixedSize() { // TODO fix sizing and test for linux
+window* newWindowFixedSize() {
+    if(!environmentInitialized) { initEnvironment(); environmentInitialized = true; }
+
     #ifdef __linux__
-        Display* display = XOpenDisplay(NULL);
-        Screen* screen = DefaultScreenOfDisplay(display);
-
-        int screenWidth = WidthOfScreen(screen);
-        int screenHeight = HeightOfScreen(screen);
-
-        XCloseDisplay(display);
-
         int w = (screenWidth-10) / 8;
         int h = (screenHeight-50)/17;
 
     #elif _WIN32
-        int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-        int screenHeight = GetSystemMetrics(SM_CYSCREEN);
         // (w - 32) / 9? because characters (plus spacing between them) are 9 px wide
         // (h - 35) / 19? because characters (plus spacing between them) are 19 px tall
         int w = (screenWidth - 32) / 9;
@@ -86,6 +103,16 @@ void windowClear(window* w) { for(int i = 0; i < (w->sizeX) * (w->sizeY); i++) w
 void windowClearPoints(window* w) { clearQueue(w->points); }
 
 bool windowPushPoint(window* w, renderpoint p) {
+    p.x += w->offsetX;
+    p.y = w->offsetY - p.y;
+    if(p.x < 0 || p.x > w->sizeX-1) return false;
+    if(p.y < 0 || p.y > w->sizeY-1) return false;
+    enqueue(w->points, p);
+    return true;
+}
+
+bool windowPushPointCompress(window* w, renderpoint p) {
+    p.y *= vcomp;
     p.x += w->offsetX;
     p.y = w->offsetY - p.y;
     if(p.x < 0 || p.x > w->sizeX-1) return false;
@@ -115,6 +142,32 @@ bool windowSetShape(window* w, shape* s) {
     struct Node* current = s->front;
     while(current != NULL) {
         windowSetPoint(w, current->data);
+        // WINDX(w,current->data.x+w->offsetX,current->data.y+w->offsetY) = current->data.c;
+        current = current->next;
+    }
+
+    return true;
+}
+
+bool windowSetPointCompress(window* w, renderpoint p) {
+    p.y *= vcomp;
+    p.x += w->offsetX;
+    p.y = w->offsetY - p.y;
+    if(p.x < 0 || p.x > w->sizeX-1) return false;
+    if(p.y < 0 || p.y > w->sizeY-1) return false;
+    w->buffer[p.y + p.x*w->sizeY] = p.c;
+    return true;
+}
+
+bool windowSetShapeCompress(window* w, shape* s) {
+    if(isEmpty(s)) {
+        return false;
+    }
+
+    struct Node* current = s->front;
+    while(current != NULL) {
+        
+        windowSetPointCompress(w, current->data);
         // WINDX(w,current->data.x+w->offsetX,current->data.y+w->offsetY) = current->data.c;
         current = current->next;
     }
@@ -228,3 +281,6 @@ void windowMainLoop(window* w, void (*mainFunc)(window*)) {
         usleep(USECSPERFRAME60HZ);
     }
 }
+
+
+renderpointfl rpflcompress(renderpointfl p) { p.y *= vcomp; return p; }

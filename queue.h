@@ -25,7 +25,6 @@ renderpoint rpfltorp(renderpointfl p) { return (renderpoint){p.x,p.y,p.c}; }
 renderpointfl rptorpfl(renderpoint p) { return (renderpointfl){p.x,p.y,p.c}; }
 
 
-
 // Define the structure of a node in the queue
 struct Node {
     renderpoint data;

@@ -1,24 +1,12 @@
 #include "queue.h"
 #include <math.h>
 
-typedef queue shape; // same ol data format but new funcs :/
-/*
-// Define the structure of a node in the queue
-struct Node {
-    renderpoint data;
-    struct Node* next;
-};
-
-// Define the structure of the queue
-typedef struct Queue {
-    int len;
-    struct Node* front;
-    struct Node* rear;
-} queue;
-*/
+#define PITHREE 1.0471975512
+#define TWOPITHREE 2.09439510239
+#define FOURPITHREE 4.18879020479
 
 
-
+typedef queue shape;
 
 shape* newShape() {
     shape* s = (shape*)malloc(sizeof(shape));
@@ -57,7 +45,32 @@ void shapeAddShape(shape* s1, shape* s2) {
 }
 
 
-shape* line(renderpoint p1, renderpoint p2) {
+renderpointfl renderpointflRotate(renderpointfl p, renderpointfl rotationPoint, float angle) {
+    printf("p.x = %f\n", p.x);
+    printf("p.y = %f\n", p.y);
+    float nx = p.x - rotationPoint.x;
+    float ny = p.y - rotationPoint.y;
+
+    printf("p.x = %f\n", p.x);
+    printf("p.y = %f\n", p.y);
+
+    float anglesin = sin(angle);
+    float anglecos = cos(angle);
+    printf("anglesin = %f\n", anglesin);
+    printf("anglecos = %f\n", anglecos);
+
+    p.x = nx * anglecos - ny * anglesin + rotationPoint.x;
+    p.y = nx * anglesin - ny * anglecos + rotationPoint.y;
+
+    printf("p.x = %f\n", p.x);
+    printf("p.y = %f\n", p.y);
+
+    return p;
+}
+
+
+
+shape* lineint(renderpoint p1, renderpoint p2) {
     int dx = abs(p2.x - p1.x);
     int dy = abs(p2.y - p1.y);
 
@@ -86,8 +99,10 @@ shape* line(renderpoint p1, renderpoint p2) {
     return s;
 }
 
+shape* line(renderpointfl p1, renderpointfl p2) { return lineint(rpfltorp(p1), rpfltorp(p2)); }
 
-shape* rect2(renderpoint p1, renderpoint p2) {
+
+shape* rect2(renderpointfl p1, renderpointfl p2) {
     shape* s = newShape();
 
     int lgx = (p1.x > p2.x) ? p1.x : p2.x;
@@ -108,7 +123,7 @@ shape* rect2(renderpoint p1, renderpoint p2) {
     return s;
 }
 
-shape* rect4(renderpoint p1, renderpoint p2, renderpoint p3, renderpoint p4) {
+shape* rect4(renderpointfl p1, renderpointfl p2, renderpointfl p3, renderpointfl p4) {
 
     shape* rect = line(p1, p2); // just use the first line as the rectangle object
     shape* l2 = line(p2, p3);
@@ -127,6 +142,24 @@ shape* rect4(renderpoint p1, renderpoint p2, renderpoint p3, renderpoint p4) {
     return rect;
 }
 
+shape* eqtriangle(renderpointfl center, float radius, float rotation) {
+    renderpointfl p1 = renderpointflRotate(newrpfl(0, radius, '0'), center, rotation);
+    renderpointfl p2 = renderpointflRotate(newrpfl(0, radius, '0'), center, rotation + TWOPITHREE);
+    renderpointfl p3 = renderpointflRotate(newrpfl(0, radius, '0'), center, rotation + FOURPITHREE);
+
+    shape* triangle = line(p1, p2);
+    shape* l2 = line(p2, p3);
+    shape* l3 = line(p3, p1);
+
+    shapeAddShape(triangle, l2);
+    shapeAddShape(triangle, l3);
+
+    shapeFree(l2);
+    shapeFree(l3);
+
+    return triangle;
+}
+
 float constrain_angle(float angle) {
     // Ensure the angle is positive
     while (angle < 0) {
@@ -142,25 +175,3 @@ float constrain_angle(float angle) {
 }
 
 
-renderpointfl renderpointflRotate(renderpointfl p, renderpointfl rotationPoint, float angle) {
-    printf("p.x = %f\n", p.x);
-    printf("p.y = %f\n", p.y);
-    float nx = p.x - rotationPoint.x;
-    float ny = p.y - rotationPoint.y;
-
-    printf("p.x = %f\n", p.x);
-    printf("p.y = %f\n", p.y);
-
-    float anglesin = sin(angle);
-    float anglecos = cos(angle);
-    printf("anglesin = %f\n", anglesin);
-    printf("anglecos = %f\n", anglecos);
-
-    p.x = nx * anglecos - ny * anglesin + rotationPoint.x;
-    p.y = nx * anglesin - ny * anglecos + rotationPoint.y;
-
-    printf("p.x = %f\n", p.x);
-    printf("p.y = %f\n", p.y);
-
-    return p;
-}
