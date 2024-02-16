@@ -275,12 +275,22 @@ void windowFree(window* w) {
 }
 
 
-void windowMainLoop(window* w, void (*mainFunc)(window*)) {
+float fpsToUsecPerFrame(float fps) { return 1000000/fps; }
+
+void windowMainLoop(window* w, void (*mainFunc)(window*), float fps) {
+    float usecperframe = fpsToUsecPerFrame(fps);
     while(w->running) {
         mainFunc(w);
         usleep(USECSPERFRAME60HZ);
     }
 }
 
+void windowMainLoopGlobals(window* w, void (*mainFunc)(window*, void*), float fps, void* globals) {
+    float usecperframe = fpsToUsecPerFrame(fps);
+    while(w->running) {
+        mainFunc(w, globals);
+        usleep(USECSPERFRAME60HZ);
+    }
+}
 
 renderpointfl rpflcompress(renderpointfl p) { p.y *= vcomp; return p; }
