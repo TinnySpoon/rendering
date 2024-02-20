@@ -2,6 +2,9 @@
 #include <stdbool.h>
 
 
+#define moveCursorTo(x,y) printf("\033[%d;%dH", x, y)
+
+
 #ifdef __linux__
 	#include <unistd.h>
     #include <X11/Xlib.h> // may need to run the command "sudo apt-get install libx11-dev"
@@ -275,22 +278,18 @@ void windowFree(window* w) {
 }
 
 
-float fpsToUsecPerFrame(float fps) { return 1000000/fps; }
+float fpsToUsecPerFrame(float fps) { return 1000000.0f/fps; }
 
 void windowMainLoop(window* w, void (*mainFunc)(window*), float fps) {
     float usecperframe = fpsToUsecPerFrame(fps);
+    printf("usecperframe = %f\n", usecperframe);
+
+    // return;
     while(w->running) {
         mainFunc(w);
-        usleep(USECSPERFRAME60HZ);
+        usleep(usecperframe);
     }
 }
 
-void windowMainLoopGlobals(window* w, void (*mainFunc)(window*, void*), float fps, void* globals) {
-    float usecperframe = fpsToUsecPerFrame(fps);
-    while(w->running) {
-        mainFunc(w, globals);
-        usleep(USECSPERFRAME60HZ);
-    }
-}
 
 renderpointfl rpflcompress(renderpointfl p) { p.y *= vcomp; return p; }

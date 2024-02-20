@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "renderwindow.h"
 
-#define moveCursorTo(x,y) printf("\033[%d;%dH", x, y)
 
 #ifndef M_PI // vscode error checking was throwing a fit
 const M_PI = 3.14;
